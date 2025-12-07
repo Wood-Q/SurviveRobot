@@ -16,45 +16,19 @@ export default {
         'rescue-red': '#ef4444',
         'rescue-yellow': '#facc15',
         'rescue-blue': '#3b82f6',
-        'tech-cyan': '#00f0ff',
-        'tech-amber': '#ffcc00',
-        'tech-bg': 'rgba(0, 20, 40, 0.8)',
       },
       fontFamily: {
-        'mono': ['"Share Tech Mono"', 'Monaco', 'Courier New', 'monospace'],
-        'tech': ['"Orbitron"', 'sans-serif'],
-      },
-      backgroundImage: {
-        'tech-gradient': 'linear-gradient(to right, rgba(0, 240, 255, 0.1), transparent)',
-        'tech-gradient-r': 'linear-gradient(to left, rgba(0, 240, 255, 0.1), transparent)',
+        'mono': ['Monaco', 'Courier New', 'monospace'],
       },
       animation: {
         'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'blink': 'blink 1s infinite',
-        'ping': 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
-        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'scan': 'scan 2s linear infinite',
-        'spin-slow': 'spin 3s linear infinite',
-        'ping-slow': 'ping 3s cubic-bezier(0, 0, 0.2, 1) infinite',
       },
       keyframes: {
         blink: {
           '0%, 50%, 100%': { opacity: '1' },
           '25%, 75%': { opacity: '0.5' },
         },
-        ping: {
-          '75%, 100%': {
-            transform: 'scale(2)',
-            opacity: '0',
-          },
-        },
-        scan: {
-          '0%': { transform: 'translateY(-100%)' },
-          '100%': { transform: 'translateY(100%)' },
-        },
-      },
-      backdropBlur: {
-        'xs': '2px',
       },
     },
   },

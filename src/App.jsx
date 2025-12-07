@@ -163,7 +163,7 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [isLoaded, sendMessage])
+  }, [isLoaded, isSocketConnected, robotState.waterCount, robotState.foodCount, sendMessage, placeItem])
 
   // 模拟数据更新
   useEffect(() => {
@@ -202,117 +202,56 @@ function App() {
     return () => clearInterval(interval)
   }, [])
 
-  const handleDropItem = (type) => {
-    setRobotState(prev => {
-      if (type === 'water' && prev.waterCount > 0) {
-        return { ...prev, waterCount: prev.waterCount - 1 }
-      }
-      if (type === 'food' && prev.foodCount > 0) {
-        return { ...prev, foodCount: prev.foodCount - 1 }
-      }
-      return prev
-    })
-  }
+  // Unified Action Handler for HUD
+  const handleHUDAction = (type, action, value) => {
+    if (!isLoaded) return;
 
-  const handleButtonPress = (action) => {
-    switch (action) {
-      case 'forward':
-        if (isLoaded) sendMessage('Robot', 'Move', 'forward')
-        setIsMoving(prev => ({ ...prev, forward: true }))
-        break
-      case 'left':
-        if (isLoaded) sendMessage('Robot', 'Move', 'left')
-        setIsMoving(prev => ({ ...prev, left: true }))
-        break
-      case 'back':
-        if (isLoaded) sendMessage('Robot', 'Move', 'back')
-        setIsMoving(prev => ({ ...prev, back: true }))
-        break
-      case 'right':
-        if (isLoaded) sendMessage('Robot', 'Move', 'right')
-        setIsMoving(prev => ({ ...prev, right: true }))
-        break
-      case 'water':
-        if (robotState.waterCount > 0) {
-          // 通过 Socket 发送
-          if (isSocketConnected) {
-            placeItem(ITEM_TYPES.WATER, 1)
-          }
-          // 通知 Unity
-          if (isLoaded) {
-            sendMessage('Robot', 'DropItem', 'water')
-          }
+    if (type === 'click') {
+      if (action === 'drop') {
+        if (value === 'water' && robotState.waterCount > 0) {
+          if (isSocketConnected) placeItem(ITEM_TYPES.WATER, 1);
+          sendMessage('Robot', 'DropItem', 'water');
+        } else if (value === 'food' && robotState.foodCount > 0) {
+          if (isSocketConnected) placeItem(ITEM_TYPES.FOOD, 1);
+          sendMessage('Robot', 'DropItem', 'food');
         }
-        break
-      case 'food':
-        if (robotState.foodCount > 0) {
-          // 通过 Socket 发送
-          if (isSocketConnected) {
-            placeItem(ITEM_TYPES.FOOD, 1)
-          }
-          // 通知 Unity
-          if (isLoaded) {
-            sendMessage('Robot', 'DropItem', 'food')
-          }
+      } else if (action === 'toggle') {
+        if (value === 'flashlight') {
+          sendMessage('Robot', 'ToggleTool', 'flashlight');
+          setRobotState(prev => ({ ...prev, isFlashlightOn: !prev.isFlashlightOn }));
+        } else if (value === 'nightvision') {
+          sendMessage('Robot', 'ToggleTool', 'nightvision');
+          setRobotState(prev => ({ ...prev, isNightvisionOn: !prev.isNightvisionOn }));
         }
-        break
-      case 'flashlight':
-        sendMessage('Robot', 'ToggleTool', 'flashlight')
-        setRobotState(prev => ({
-          ...prev,
-          isFlashlightOn: !prev.isFlashlightOn,
-        }))
-        break
-      case 'nightvision':
-        sendMessage('Robot', 'ToggleTool', 'nightvision')
-        setRobotState(prev => ({
-          ...prev,
-          isNightvisionOn: !prev.isNightvisionOn,
-        }))
-        break
-      default:
-        break
+      }
     }
-  }
-
-  const handleButtonRelease = (action) => {
-    switch (action) {
-      case 'forward':
-        setIsMoving(prev => ({ ...prev, forward: false }))
-        break
-      case 'left':
-        setIsMoving(prev => ({ ...prev, left: false }))
-        break
-      case 'back':
-        setIsMoving(prev => ({ ...prev, back: false }))
-        break
-      case 'right':
-        setIsMoving(prev => ({ ...prev, right: false }))
-        break
-      default:
-        break
-    }
-  }
+  };
 
   return (
-    <div className="w-screen h-screen bg-dark-bg text-white relative overflow-hidden">
-      {/* Unity Canvas - 全屏底层 */}
-      <div className="absolute inset-0 w-full h-full">
-        <Unity 
-          unityProvider={unityProvider} 
-          style={{ width: '100%', height: '100%' }}
-        />
+    <div className="relative w-screen h-screen overflow-hidden bg-black">
+      {/* Layer 0: Unity Background */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        {!isLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
+            <div className="text-center">
+              <div className="text-2xl font-bold mb-4 text-orange-500 tracking-widest font-mono">
+                SYSTEM INITIALIZING...
+              </div>
+              <div className="w-64 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto">
+                <div className="h-full bg-orange-500 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        )}
+        <Unity unityProvider={unityProvider} className="w-full h-full" />
       </div>
 
-      {/* HUD 覆盖层 */}
-      <RobotHUD
+      {/* Layer 1: HUD Overlay */}
+      <RobotHUD 
         robotState={robotState}
-        isMoving={isMoving}
-        onButtonPress={handleButtonPress}
-        onButtonRelease={handleButtonRelease}
-        isLoaded={isLoaded}
         isSocketConnected={isSocketConnected}
-        keysPressed={keysPressed.current}
+        onAction={handleHUDAction}
+        isMoving={isMoving}
       />
     </div>
   )
