@@ -69,6 +69,9 @@ export class JSBridgeClient {
       // 处理CustomEvent或直接调用
       const data = event.detail || event
       
+      console.log('[JSBridgeClient] 原始Unity事件:', event)
+      console.log('[JSBridgeClient] 解析的数据:', data)
+      
       if (!data || !data.topic) {
         console.warn('[JSBridgeClient] 收到无效的Unity消息:', data)
         return

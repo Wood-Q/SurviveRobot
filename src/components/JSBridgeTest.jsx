@@ -12,6 +12,7 @@ export default function JSBridgeTest() {
   const [connectionState, setConnectionState] = useState('disconnected')
   const [playerStatus, setPlayerStatus] = useState(null)
   const [lastMessage, setLastMessage] = useState(null)
+  const [rawUnityData, setRawUnityData] = useState(null)
   const [logs, setLogs] = useState([])
 
   // 添加日志
@@ -40,10 +41,11 @@ export default function JSBridgeTest() {
 
     // 监听玩家状态
     const handlePlayerStatus = (data) => {
+      setRawUnityData(data) // 保存原始Unity数据
       const parsed = parsePlayerStatus(data)
       setPlayerStatus(parsed)
       setLastMessage({ type: 'player_status', data: parsed, timestamp: new Date() })
-      addLog('收到玩家状态更新')
+      addLog(`收到玩家状态更新: ${JSON.stringify(data).substring(0, 100)}...`)
     }
 
     // 监听操作结果
@@ -212,14 +214,24 @@ export default function JSBridgeTest() {
         </div>
       )}
 
+      {/* 原始Unity数据 */}
+      {rawUnityData && (
+        <div className="mb-6 p-4 border rounded-lg">
+          <h2 className="text-lg font-semibold mb-2">原始Unity数据</h2>
+          <pre className="bg-yellow-50 p-2 rounded text-xs overflow-auto max-h-40 border">
+            {JSON.stringify(rawUnityData, null, 2)}
+          </pre>
+        </div>
+      )}
+
       {/* 最后一条消息 */}
       {lastMessage && (
         <div className="mb-6 p-4 border rounded-lg">
-          <h2 className="text-lg font-semibold mb-2">最新消息</h2>
+          <h2 className="text-lg font-semibold mb-2">解析后消息</h2>
           <div className="text-sm">
             <div className="font-medium">{lastMessage.type}</div>
             <div className="text-gray-600">{lastMessage.timestamp.toLocaleTimeString()}</div>
-            <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto">
+            <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto max-h-40">
               {JSON.stringify(lastMessage.data, null, 2)}
             </pre>
           </div>

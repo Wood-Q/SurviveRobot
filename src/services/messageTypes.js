@@ -119,8 +119,8 @@ export function parsePlayerStatus(data) {
         acc[item.type] = item.count
         return acc
       }, {}) : {
-        water: data.inventory?.items?.find(item => item.type === 'water')?.count || 0,
-        food: data.inventory?.items?.find(item => item.type === 'food')?.count || 0,
+        water: 0,
+        food: 0,
       },
     },
     position: data.position || { x: 0, y: 0, z: 0 },

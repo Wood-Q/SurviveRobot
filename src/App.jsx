@@ -10,10 +10,10 @@ function App() {
   const [activeTab, setActiveTab] = useState('game') // 'game' 或 'test'
   
   const { unityProvider, sendMessage, isLoaded } = useUnityContext({
-    loaderUrl: '/Build/build.loader.js',
-    dataUrl: '/Build/build.data',
-    frameworkUrl: '/Build/build.framework.js',
-    codeUrl: '/Build/build.wasm',
+    loaderUrl: '/Build/Build.loader.js',
+    dataUrl: '/Build/Build.data',
+    frameworkUrl: '/Build/Build.framework.js',
+    codeUrl: '/Build/Build.wasm',
   })
 
   // Socket 连接
@@ -300,36 +300,47 @@ function App() {
   return (
     <div className="w-screen h-screen bg-dark-bg text-white relative overflow-hidden">
       {/* Tab 切换按钮 */}
-      <div className="absolute top-4 right-4 z-50 flex space-x-2">
+      <div className="absolute top-4 right-4 z-[9999] flex flex-col space-y-2 pointer-events-auto">
+        <div className="text-xs text-gray-400 text-right">
+          当前: {activeTab === 'game' ? '游戏界面' : '通信测试'}
+        </div>
+        <div className="flex space-x-2">
         <button
-          onClick={() => setActiveTab('game')}
-          className={`px-4 py-2 rounded text-sm transition-colors ${
+          onClick={() => {
+            console.log('切换到游戏界面')
+            setActiveTab('game')
+          }}
+          className={`px-4 py-2 rounded text-sm font-medium transition-all duration-200 pointer-events-auto cursor-pointer ${
             activeTab === 'game' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-blue-600 text-white shadow-lg' 
+              : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white shadow-md'
           }`}
         >
-          游戏界面
+          🎮 游戏界面
         </button>
         <button
-          onClick={() => setActiveTab('test')}
-          className={`px-4 py-2 rounded text-sm transition-colors ${
+          onClick={() => {
+            console.log('切换到通信测试界面')
+            setActiveTab('test')
+          }}
+          className={`px-4 py-2 rounded text-sm font-medium transition-all duration-200 pointer-events-auto cursor-pointer ${
             activeTab === 'test' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-blue-600 text-white shadow-lg' 
+              : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white shadow-md'
           }`}
         >
-          通信测试
+          🔧 通信测试
         </button>
+        </div>
       </div>
 
       {activeTab === 'game' ? (
         <>
           {/* Unity Canvas - 全屏底层 */}
-          <div className="absolute inset-0 w-full h-full">
+          <div className="absolute inset-0 w-full h-full pointer-events-auto">
             <Unity 
               unityProvider={unityProvider} 
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
             />
           </div>
 
