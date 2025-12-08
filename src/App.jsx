@@ -19,6 +19,9 @@ function App() {
   // JSBridge连接状态
   const [isConnected, setIsConnected] = useState(false)
   
+  // 任务完成状态追踪
+  const [hasShownMissionComplete, setHasShownMissionComplete] = useState(false)
+  
   const [robotState, setRobotState] = useState({
     battery: 85,
     waterCount: 10,
@@ -116,6 +119,16 @@ function App() {
       jsBridgeClient.off('action_result', handleActionResult)
     }
   }, [])
+
+  // 监听任务完成状态，显示弹窗
+  useEffect(() => {
+    if (robotState.missionCompleted && !hasShownMissionComplete) {
+      setHasShownMissionComplete(true)
+      setTimeout(() => {
+        alert('🎉 任务完成！\n\n恭喜你成功找到并护送幸存者到达安全区域！')
+      }, 500) // 延迟500ms显示，确保状态已更新
+    }
+  }, [robotState.missionCompleted, hasShownMissionComplete])
 
   // 初始化键盘监听
   useEffect(() => {
