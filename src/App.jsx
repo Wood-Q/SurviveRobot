@@ -80,8 +80,8 @@ function App() {
         // 手电筒和夜视
         isFlashlightOn: parsed.flashlightOn,
         isNightvisionOn: parsed.nightVisionOn,
-        // 生命体征检测（距离<15m 或 NPC正在跟随）
-        isPersonDetected: (parsed.distanceToNpc > 0 && parsed.distanceToNpc < 15) || parsed.npcIsFollowing,
+        // 生命体征检测（距离<100m 或 NPC正在跟随）
+        isPersonDetected: (parsed.distanceToNpc > 0 && parsed.distanceToNpc < 100) || parsed.npcIsFollowing,
         // 任务状态
         missionCompleted: parsed.missionCompleted,
         npcFollowUnlocked: parsed.npcFollowUnlocked,
