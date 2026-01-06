@@ -3,9 +3,11 @@ import { Unity, useUnityContext } from 'react-unity-webgl'
 import RobotHUD from './components/RobotHUD'
 import RobotHUD_Minimal from './components/RobotHUD_Minimal'
 import RobotHUD_Dashboard from './components/RobotHUD_Dashboard'
+import RobotAIDiagnosis from './components/RobotAIDiagnosis'
 import JSBridgeTest from './components/JSBridgeTest'
 import { jsBridgeClient } from './services/jsBridgeClient'
 import { parsePlayerStatus } from './services/messageTypes'
+import usePicoController from './hooks/usePicoController'
 import './App.css'
 
 function App() {
@@ -325,6 +327,14 @@ function App() {
     }
   }
 
+  // PICO VR 手柄适配
+  usePicoController({
+    handleButtonPress,
+    handleButtonRelease,
+    isLoaded,
+    isConnected
+  })
+
   return (
     <div className="w-screen h-screen bg-dark-bg text-white relative overflow-hidden">
       {/* 右上角控制抽屉：默认收起，悬停/聚焦展开 */}
@@ -410,6 +420,13 @@ function App() {
               unityProvider={unityProvider} 
               style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
             />
+          </div>
+
+          {/* AI 诊断面板 (左上角) */}
+          <div className="absolute top-4 left-4 z-40 pointer-events-none">
+            <div className="pointer-events-auto">
+              <RobotAIDiagnosis robotState={robotState} />
+            </div>
           </div>
 
           {/* HUD 覆盖层 */}
